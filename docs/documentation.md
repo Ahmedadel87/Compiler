@@ -24,9 +24,9 @@ With those defined, we can now define EXPRESSIONs:
 It differs from an expression because it IS the output of a definition.
 
 ## ex: 
-5 + 3 is an expression, 
+`5 + 3` is an expression, 
 - Is known to exist at compile time.
-- It produces an output (type is inferred as i32 (unless default changed see  3.1); value = 8).
+- It produces an output (type is inferred as `i32` (unless default changed see 3.1); value = 8).
 - Its type will not change for its lifetime.
 - It has a definition but not a declaration — it has no name bound.
 
@@ -38,10 +38,11 @@ The type system is split into types and type groups,
 ∙Types are concrete and fully specified and are the static type for all EXPRESSIONs (see 1.0).
 
 ∙Type groups are a reference to a range of types, they are used 	
- for broad runtime type-checking and multiple '#set' settings such as inference.
- ex: 'Integer' refers to, 'i8', 'u8', ... 'i64', 'u64'
-     '#set infer Integer to i64' changes the inference 
-     of the 'Integer' type group to a 'i64' (a type).
+ for broad runtime type-checking and multiple `#set` settings such as inference.
+ ex: 
+     `Integer` refers to, `i8`, `u8`, ... `i64`, `u64`
+     `'#set infer Integer to i64'` changes the inference 
+     of the `Integer` type group to a `i64` (a type).
 
 All type groups and types:
   - `Integer` → `i8`, `u8`, `i16`, `u16`, `i32`, `u32`, `i64`, `u64`
@@ -70,7 +71,7 @@ All type groups and types:
       
 
 # 3.0: Declarations:
-'`let' ['mut'] IDENT [':' TYPE] '=' EXPRESSION ';'`
+`'let' ['mut'] IDENT [':' TYPE] '=' EXPRESSION ';'`
 
   - type is inferred unless `(':' TYPE)` was found.
   - immutable by default unless `mut` specified.
@@ -96,9 +97,9 @@ All type groups and types:
   `'#set infer' TYPE_GROUP 'to' TYPE ';'`
    L-> Everything after it will use that default but NOT before it, it is not affected by scopes.
   Unless defaults are set, then the defaults are as follows:
-     `Integer` → `i32`
-     `Float` → `f64`
-     `Strings` → `String`
+    - `Integer` → `i32`
+    - `Float` → `f64`
+    - `Strings` → `String`
 
   ## 3.11:
   - If you make your own type group, and overwrite it with overlapping types in existing typegroup then do:
@@ -121,15 +122,15 @@ All type groups and types:
     is that this makes a type be assigned to that type group instead of the other, whilst for example
     5 could be a floating point number not only an integer, in default the list goes as so
     (note that vertically means they are the same priority):
-    - `'V::Numbers': `'Integer'` > `'Float'`
-    - `'V::Strings': `'String'` > (still figuring out strings)
-    - `'V::Bool'`: `'Bool'`
-    - `'V::Other'`
+    - `V::Numbers`: `Integer` > `Float`
+    - `V::Strings': `String` > (still figuring out strings)
+    - `V::Bool`: `Bool`
+    - `V::Other`
 
     These are the only value groups, they CANNOT be created.
-    You may have noticed they are put into groups starting with 'V::', these are value groups, they contain type groups,
-    they are critical for the priority system,  they are denoted with 'V::', but note that they belong to the type inference system but NOT the type system.
-    In default when making a type group, they are assigned to V::Other, to assign a type group in any value group at any priority rank then follow this syntax:
+    You may have noticed they are put into groups starting with `V::`, these are value groups, they contain type groups,
+    they are critical for the priority system, they are denoted with `V::`, but note that they belong to the type inference system but NOT the type system.
+    In default when making a type group, they are assigned to `V::Other`, to assign a type group in any value group at any priority rank then follow this syntax:
       `'#insert' TYPE_GROUP 'in' VALUE_GROUP 'as rank' (Integer Value) ';'`
     Note the top/first priority is 1.
     ex:
