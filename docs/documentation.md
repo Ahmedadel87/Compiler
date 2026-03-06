@@ -7,7 +7,7 @@ it is a static compiled language. It focuses on clear error reporting.
 Expressions are the core of [insert lang name], everything depends
 on the definition of expressions.
 
-## First, let's define DEFINITIONs:
+## Definition of a 'DEFINITION':
 - Names may be assigned but are optional.
 - MUST be known at compile-time.
 - It MUST be able to produce an output (a type with no value is considered as a valid output) with a static type, 
@@ -51,9 +51,9 @@ All type groups and types:
   - 'Char' →?
     
   - It is possible to make your own type groups:
-    '#set typegroup' IDENT '=' TYPE(s) ';'
+    `'#set typegroup' IDENT '=' TYPE(s) ';'`
     ex: 
-    #set typegroup Unsigned_Integer = u8, u16, u32, u64;
+    `#set typegroup Unsigned_Integer = u8, u16, u32, u64;`
 
     Type definitions:
       - i8, i16, i32, i64: are signed integers (they can be positive and negative) with a bit size 
@@ -70,16 +70,16 @@ All type groups and types:
       
 
 # 3.0: Declarations:
-'let' ['mut'] IDENT [':' TYPE] '=' EXPRESSION ';'
+'`let' ['mut'] IDENT [':' TYPE] '=' EXPRESSION ';'`
        |             |
-       |             L-> type is inferred unless (':' TYPE) was found.
-       L-> immutable by default unless 'mut' specified.
+       |             L-> type is inferred unless `(':' TYPE)` was found.
+       L-> immutable by default unless `mut` specified.
 
   ex: 
-  - let x: i32 = 5;       // immutable, type is not inferred (i32 was specified).
-  - let x = 5;           // immutable, type is inferred (i32 is inferred, see 3.1).
-  - let mut x: i32 = 5; // mutable, type is not inferred (i32 was specified).
-  - let mut x = 5;     // mutable, type is inferred (i32 is inferred, see 3.1).
+  - `let x: i32 = 5;`      // immutable, type is not inferred (i32 was specified).
+  - `let x = 5;`          // immutable, type is inferred (i32 is inferred, see 3.1).
+  - `let mut x: i32 = 5;`// mutable, type is not inferred (i32 was specified).
+  - `let mut x = 5;`    // mutable, type is inferred (i32 is inferred, see 3.1).
 
 
 ## 3.10: Type inference:
@@ -93,7 +93,7 @@ All type groups and types:
 
 - Different type groups have a default, ex: integers default to i32.	
   Default may be changed through: 
-  '#set infer' TYPE_GROUP 'to' TYPE ';'
+  `'#set infer' TYPE_GROUP 'to' TYPE ';'`
    L-> Everything after it will use that default but NOT before it, it is not affected by scopes.
   Unless defaults are set, then the defaults are as follows:
      'Integer' → 'i32'
@@ -104,11 +104,13 @@ All type groups and types:
   - If you make your own type group, and overwrite it with overlapping types in existing typegroup then do:
     '#set infer on' TYPE_GROUP 'instead' TYPE_GROUP ';'
   ex:
+      ```
       #set typegroup Unsigned_Integer = u8, u16, u32, u64; 
       #set infer Unsigned_Integer to u32;
       #set infer Unsigned_Integer instead Integer;
       let unsigned = 32;   // u32 is inferred.
       let negative = -32; // i32 is inferred.
+      ```
       
        // u8, u16, u32, u64 will be inferred with Unsigned_Integer, since it overlaps with Integer.
       // i8, i16, i32, i64 will be inferred with Integer, since it doesn't overlap with Unsigned_Integer.
@@ -130,6 +132,6 @@ All type groups and types:
       '#insert' TYPE_GROUP 'in' VALUE_GROUP 'as rank' (Integer Value) ';'
     Note the top/first priority is 1.
     ex:
-      #insert Float in V::Numbers as rank 1
+      `#insert Float in V::Numbers as rank 1`
       let x = 4 // inferred as f64.
 
