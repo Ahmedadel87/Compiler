@@ -26,7 +26,7 @@ It differs from an expression because it IS the output of a definition.
 ## ex: 
 `5 + 3` is an expression, 
 - Is known to exist at compile time.
-- It produces an output (type is inferred as `i32` (unless default changed see 3.1); value = 8).
+- It produces an output (type is inferred as `i32` (unless default changed see 3.2); value = 8).
 - Its type will not change for its lifetime.
 - It has a definition but not a declaration — it has no name bound.
 
@@ -53,6 +53,8 @@ All type groups and types:
     
   - It is possible to make your own type groups:
     `'#set typegroup' IDENT '=' TYPE(s) ';'`
+    or
+    `'#enforce typegroup' IDENT '=' TYPE(s) ';'`
     ex: 
     `#set typegroup Unsigned_Integer = u8, u16, u32, u64;`
 
@@ -78,12 +80,18 @@ All type groups and types:
 
   ex: 
   - `let x: i32 = 5;`      // immutable, type is not inferred (`i32` was specified).
-  - `let x = 5;`          // immutable, type is inferred (`i32` is inferred, see 3.1).
+  - `let x = 5;`          // immutable, type is inferred (`i32` is inferred, see 3.2).
   - `let mut x: i32 = 5;`// mutable, type is not inferred (`i32` was specified).
-  - `let mut x = 5;`    // mutable, type is inferred (`i32` is inferred, see 3.1).
+  - `let mut x = 5;`    // mutable, type is inferred (`i32` is inferred, see 3.2).
 
+## 3.1: \#set and \#enforce:
+  [insert lang name] has a very powerful feature, you can tell the compiler what to do using `#set` and `#enforce`.
+  You can tell the compiler how to infer types (see 3.2), and ... (WIP). 
+  - Both `#set` and `#enforce` are not affected by scopes, they affect the lines after them.
+  - `#set` only affects the file its in, `#enforce` can affect multiple files if it is in a {header(wip)}.
+  - `#enforce` cannot be changed by `#set`.
 
-## 3.10: Type inference:
+## 3.20: Type inference:
 - The type is inferred at declaration (definition MUST be present at declaration).
 
 - It MUST be inferred from an EXPRESSION (see 1.0) that has a static and fully determinable type.
@@ -95,15 +103,19 @@ All type groups and types:
 - Different type groups have a default, ex: integers default to `i32`.	
   Default may be changed through: 
   `'#set infer' TYPE_GROUP 'to' TYPE ';'`
+  or 
+  `'#enforce infer' TYPE_GROUP 'to' TYPE ';'`
    L-> Everything after it will use that default but NOT before it, it is not affected by scopes.
   Unless defaults are set, then the defaults are as follows:
     - `Integer` → `i32`
     - `Float` → `f64`
     - `Strings` → `String`
 
-  ## 3.11:
+  ## 3.21:
   - If you make your own type group, and overwrite it with overlapping types in existing typegroup then do:
     `'#set infer on' TYPE_GROUP 'instead' TYPE_GROUP ';'`
+    or
+    `'#enforce infer on' TYPE_GROUP 'instead' TYPE_GROUP ';'`
   ex:
       ```
       #set typegroup Unsigned_Integer = u8, u16, u32, u64; 
@@ -118,14 +130,17 @@ All type groups and types:
 
   - If a value has multiple types that span multiple type groups, then there is a priority list.
     the difference between it and overlapping types is that 
-    `'#set infer on' TYPE_GROUP 'instead' TYPE_GROUP ';'`
-    is that this makes a type be assigned to that type group instead of the other, whilst for example
+    this makes a type be assigned to that type group instead of the other, whilst for example
     5 could be a floating point number not only an integer, in default the list goes as so
     (note that vertically means they are the same priority):
     - `V::Numbers`: `Integer` > `Float`
     - `V::Strings`: `String` > (still figuring out strings)
     - `V::Bool`: `Bool`
     - `V::Other`
+    To give priority of overlapping type groups do:
+    `'#set infer on' TYPE_GROUP 'instead' TYPE_GROUP ';'`
+    or
+    `'#enforce infer on' TYPE_GROUP 'instead' TYPE_GROUP ';'`
 
     These are the only value groups, they CANNOT be created.
     You may have noticed they are put into groups starting with `V::`, these are value groups, they contain type groups,
