@@ -69,6 +69,8 @@ All type groups and types:
 
       - `bool`: corresponds to i8 integers 0 and 1 but masked as false (0) and true (1).
 
+      - `void`: corresponds either to nothing or a value without a type. 
+
       - `String`:?
       
 
@@ -133,7 +135,7 @@ All type groups and types:
     this makes a type be assigned to that type group instead of the other, whilst for example
     5 could be a floating point number not only an integer, in default the list goes as so
     (note that vertically means they are the same priority):
-    - `V::Numbers`: `Integer` > `Float`
+    - `V::Arithmetic`: `Integer` > `Float`
     - `V::Strings`: `String` > (still figuring out strings)
     - `V::Bool`: `Bool`
     - `V::Other`
@@ -154,3 +156,23 @@ All type groups and types:
       let x = 4 // inferred as f64.
       ```
 
+# 4.0: Functions and Templates:
+  Function syntax is similar to Rust:
+  ```
+  fn add(x: i32, y: i32) -> i32 {
+    return x + y;
+  }
+  ```
+  ommiting `->` is equal to `-> void`.
+  {insert lang name} templates are made to be clear and simple, they go in hand with the type inference system using type groups and value groups, for example:
+  ```
+  fn<Integer::T> add(x: T, y: T) -> T {
+    return x + y;
+  }
+  ```
+  or
+  ```
+  fn<V::Arithemtic::T> add(x: T, y: T) -> T {
+    return x + y;
+  }
+  ```
