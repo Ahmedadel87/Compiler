@@ -53,11 +53,11 @@ std::string trim(std::string& s) {
 }
 
 std::vector<std::vector<lexical_token>> Stream(std::vector<std::string> lines){
-    int line_num = 0;
+    size_t line_num = 0;
     std::vector<lexical_token> strings;
     std::string hold = "";
-    int i = 0;
-    int last_first_pos = 0;
+    size_t i = 0;
+    size_t last_first_pos = 0;
     bool ignore = false;   // whether to ignore things like quotes, because of backslashes.
     bool quote1 = false;  // this refers to this quote (').
     bool quote2 = false; // this refers to this quote (").
@@ -85,7 +85,7 @@ std::vector<std::vector<lexical_token>> Stream(std::vector<std::string> lines){
                 quote2 = (quote2) ? false : true;
                 is_string = true;
             }
-            else if((c == ':' || c == ';' || c == '{' || c == '}' || c == '=' || c == '(' || c == ')') && (!quote1 && !quote2)){ // this (if) condition specifies seperators whilst not sperating when within quotes and keeps seperator.
+            else if((c == ':' || c == ';' || c == '{' || c == '}' || c == '=' || c == '(' || c == ')' || c == '+' || c == '-' || c == '*' || c == '/') && (!quote1 && !quote2)){ // this (if) condition specifies seperators whilst not sperating when within quotes and keeps seperator.
                 if(!hold.empty() && !only_space(hold)){  
                     strings.push_back({line_num, trim(hold), last_first_pos, is_string, line});
                     is_string = false;
@@ -165,6 +165,10 @@ std::vector<Token> Tokenize(std::vector<lexical_token> line){
         else if(token.string== "(") tokens.push_back(Token{token.org_start_pos, token.line, org_word, org_line, TokenType::LPARA});
         else if(token.string== ")") tokens.push_back(Token{token.org_start_pos, token.line, org_word, org_line, TokenType::RPARA});
         else if(token.string== "=") tokens.push_back(Token{token.org_start_pos, token.line, org_word, org_line, TokenType::EQUAL});
+        else if(token.string== "+") tokens.push_back(Token{token.org_start_pos, token.line, org_word, org_line, TokenType::ADD});
+        else if(token.string== "-") tokens.push_back(Token{token.org_start_pos, token.line, org_word, org_line, TokenType::SUB});
+        else if(token.string== "*") tokens.push_back(Token{token.org_start_pos, token.line, org_word, org_line, TokenType::MUL});
+        else if(token.string== "/") tokens.push_back(Token{token.org_start_pos, token.line, org_word, org_line, TokenType::DIV});
         else if(token.string== "print") tokens.push_back(Token{token.org_start_pos, token.line, org_word, org_line, TokenType::PRINT});
         else if(isdigitstr(token.string).valid){ 
             if(isdigitstr(token.string).decimal) tokens.push_back(Token{token.org_start_pos, token.line, org_word, org_line, TokenType::FLOAT});

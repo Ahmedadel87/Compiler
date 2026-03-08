@@ -17,7 +17,8 @@ enum class Expected{
     LITERAL,
     RPARA,
     LPARA,
-    START
+    START,
+    OPERATOR //* + , - , * , /
 };
 
 std::unordered_map<TokenType, std::string> token_word;
@@ -39,4 +40,4 @@ void RPARA(std::vector<Expected>& expected_vector);
 
 void call_token(std::vector<Token>& expr, const Token& token, AST1_Type& type, std::string& ident, std::vector<Expected>& expected_vector, TokenType& dec_type);
 
-std::vector<AST1_NODE> AST1(const std::vector<Token>& line, std::string file_name);
+AST1_NODE AST1(const std::vector<Token>& line, std::string file_name);

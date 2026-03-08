@@ -13,10 +13,27 @@ enum class AST1_Type{
     NULL_
 };
 
+template<class... Ts> struct overloaded : Ts... { using Ts::operator()...; };
+template<class... Ts> overloaded(Ts...) -> overloaded<Ts...>;
+
+struct LiteralExpr { Token value; };
+
+struct ExprNode;
+
+struct BinaryExpr {
+    Token op;
+    std::unique_ptr<ExprNode> left;
+    std::unique_ptr<ExprNode> right;
+};
+
+struct ExprNode {
+    std::variant<LiteralExpr, BinaryExpr> node;
+};
+
 struct Declaration_Node{
     std::string identifier;
     TokenType type; //* Only TokenTypes that are types will be assigned here, ex: i32
-    std::vector<Token> expr;
+    ExprNode expr;
 };
 
 using Node = std::variant<Declaration_Node>;

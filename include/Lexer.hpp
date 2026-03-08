@@ -35,6 +35,10 @@ enum class TokenType{
 
     // Operators
     EQUAL,
+    ADD,
+    SUB,
+    MUL,
+    DIV,
 
     // Keywords
     LET,
@@ -44,16 +48,16 @@ enum class TokenType{
 };
 
 struct lexical_token{
-    int line;
+    size_t line;
     std::string string;
-    int org_start_pos;
+    size_t org_start_pos;
     bool is_string;
     std::string org_line;
 };
 
 struct Token{
-    int org_start_pos;
-    int line_num;
+    size_t org_start_pos;
+    size_t line_num;
     std::string org_word;
     std::string org_line;
     TokenType type;

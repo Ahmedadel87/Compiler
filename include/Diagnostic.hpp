@@ -12,7 +12,7 @@ enum class Code{
 
 struct Error{
     size_t pos, size, line;
-    std::string org_line;
+    const std::vector<Token>& org_line;
     std::string file_name;
     Code code;
 };
