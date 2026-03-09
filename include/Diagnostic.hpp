@@ -22,7 +22,7 @@ constexpr std::array<std::string_view, 4> error_names = {
 };
 
 constexpr std::array<std::string_view, 4> expected = {
-    "Type was not found, to infer remove the colon."
+    "Expected a type before this equal, try removing the colon."
 };
 
 constexpr std::string_view to_string(Code t) {
@@ -33,4 +33,8 @@ constexpr std::string_view to_expect(Code t) {
     return expected[static_cast<size_t>(t)];
 }
 
-void Report(const std::vector<Error>& errors);
+void write_token(const Token& token, size_t& prev);
+
+void write_line(Error error);
+
+void Report(const Error& errors);

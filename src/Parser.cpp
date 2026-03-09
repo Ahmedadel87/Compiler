@@ -4,7 +4,9 @@
 #include <unordered_map>
 #include <memory>
 #include <variant>
+
 #include "Parser.hpp"
+#include "Diagnostic.hpp"
 
 bool is_type(TokenType type){
     if(type == TokenType::I8 || type == TokenType::U8 || type == TokenType::I16 || type == TokenType::U16 || type == TokenType::I32 || type == TokenType::U32 || type == TokenType::I64 || type == TokenType::U64 || type == TokenType::F32 || type == TokenType::F64){
@@ -75,20 +77,19 @@ bool is_expected(const std::vector<Expected>& expected_vector, const TokenType& 
     return false;
 }
 
-void REPORT(const std::vector<Expected>& expected_vector, const TokenType& got, std::string file_name){
-    std::unordered_map<Expected, std::string> expected_word;
-    expected_word[Expected::IDENTIFIER] = "IDENTIFIER";
-    expected_word[Expected::VARIABLE] = "VARIABLE";
-    expected_word[Expected::COLON] = "COLON";
-    expected_word[Expected::TYPE] = "TYPE";
-    expected_word[Expected::EQUAL] = "EQUAL";
-    expected_word[Expected::LITERAL] = "LITERAL";
-    expected_word[Expected::START] = "START";
-    std::cout << "\n" << file_name << "[Error::Parser]";
-    std::cout << "\nExpected: ";
-    for(Expected exp : expected_vector) std::cout << expected_word[exp] << ", ";
-    std::cout << "Instead got " << token_word[got] << '\n';
-    
+void report_error_to_diagnostics(const std::vector<Token>& line, const std::vector<Expected>& expected_vector, const Token& got, std::string file_name){
+    if(expected_vector== std::vector<Expected>{Expected::TYPE} && got.type== TokenType::EQUAL){
+        /*
+        * struct Error{
+        *     size_t pos, size, line;
+        *     const std::vector<Token>& org_line;
+        *     std::string file_name;
+        *     Code code;
+        * };
+        */
+       std::cout << '\n';
+       Report(Error{got.org_start_pos, got.org_word.size(), got.line_num, line, file_name, Code::TYPE_MISS});
+    }
 }
 
 void LET(const Token& token, AST1_Type& type, std::vector<Expected>& expected_vector){
@@ -154,8 +155,6 @@ void call_token(std::vector<Token>& expr, const Token& token, AST1_Type& type, s
     else if(is_operator(token.type)) OPERATOR(expected_vector, expr, token);
     else if(token.type== TokenType::PRINT) PRINT(token, type, expected_vector);
 }
-
-#define DEBUG
 
 void print_expr(const ExprNode& node, const std::string& prefix = "", bool is_right = false){
     if(std::holds_alternative<LiteralExpr>(node.node)){
@@ -225,6 +224,8 @@ ExprNode Parse_expression(const std::vector<Token>& expr){
     return root;
 }
 
+#define DEBUG
+
 AST1_NODE AST1(const std::vector<Token>& line, std::string file_name){
     std::vector<Token> expr;
     AST1_Type type;
@@ -237,10 +238,10 @@ AST1_NODE AST1(const std::vector<Token>& line, std::string file_name){
     for(size_t i = 0; i < line.size(); ++i){
         const Token& token = line[i];
         #ifdef DEBUG
-        std::cout << token_word[token.type] << ' ';
+        std::cout << int(token.type) << ' ';
         #endif
         if(is_expected(expected_vector, token.type)) call_token(expr, token, type, ident, expected_vector, dec_type);
-        else REPORT(expected_vector, token.type, file_name);
+        else{ report_error_to_diagnostics(line, expected_vector, token, file_name); return AST1_NODE{}; }
     }
     #ifdef DEBUG
     std::cout << "\nOUT:\n";
@@ -258,30 +259,6 @@ AST1_NODE AST1(const std::vector<Token>& line, std::string file_name){
 
 int main(int argc, char** argv){
     std::cout << "Hello from [COMPILER]\n";
-
-    token_word[TokenType::LET] = "LET";
-    token_word[TokenType::INT] = "INT";
-    token_word[TokenType::FLOAT] = "FLOAT";
-    token_word[TokenType::IDENTIFIER] = "IDENTIFIER";
-    token_word[TokenType::COLON] = "COLON";
-    token_word[TokenType::I8] = "I8";
-    token_word[TokenType::U8] = "U8";
-    token_word[TokenType::I16] = "I16";
-    token_word[TokenType::U16] = "U16";
-    token_word[TokenType::I32] = "I32";
-    token_word[TokenType::U32] = "U32";
-    token_word[TokenType::I64] = "I64";
-    token_word[TokenType::U64] = "U64";
-    token_word[TokenType::F32] = "F32";
-    token_word[TokenType::F64] = "F64";
-    token_word[TokenType::LBRAC] = "LBRAC";
-    token_word[TokenType::RBRAC] = "RBRAC";
-    token_word[TokenType::LPARA] = "LPARA";
-    token_word[TokenType::RPARA] = "RPARA";
-    token_word[TokenType::EQUAL] = "EQUAL";
-    token_word[TokenType::STR] = "STR";
-    token_word[TokenType::PRINT] = "PRINT";
-    token_word[TokenType::NULL_] = "NULL_";
 
     std::string file_name = argv[1];
     std::ifstream read(file_name);

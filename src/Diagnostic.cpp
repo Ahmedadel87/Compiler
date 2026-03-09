@@ -15,6 +15,7 @@ void write_line(Error error){
     size_t align = 0;
     bool highlight = false;
     for(const Token& token : error.org_line){
+            
         if(token.line_num == prev_line){
             write_token(token, prev);
         }
@@ -42,6 +43,14 @@ void write_line(Error error){
             if(error.line != prev_line) std::cerr << "\x1B[2m";
             write_token(token, prev);
         }
+    }
+    if(highlight){
+        std::cerr << '\n';
+        for(int i = 0; i < align + error.pos; ++i) std::cerr << ' ';
+        for(int i = 0; i < error.size; ++i) std::cerr << '~';
+        std::cerr << " -> " << expected[int(error.code)];
+        highlight = false;
+        align = 0;
     }
     std::cout << "\x1B[0m";
 }

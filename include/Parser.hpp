@@ -2,12 +2,6 @@
 
 #include "AST.hpp"
 
-struct Error{
-    int error_code;
-    int line;
-    std::vector<Token*> error_tokens;
-};
-
 enum class Expected{
     IDENTIFIER,
     VARIABLE,
@@ -23,11 +17,11 @@ enum class Expected{
 
 std::unordered_map<TokenType, std::string> token_word;
 
+void report_error_to_diagnostics(const std::vector<Token>& line, const std::vector<Expected>& expected_vector, const Token& got, std::string file_name);
+
 bool is_type(TokenType type);
 
 bool is_expected(const std::vector<Expected>& expected_vector, const TokenType& have);
-
-void REPORT(const std::vector<Expected>& expected_vector, const TokenType& got, std::string file_name);
 
 void LET(const Token& token, AST1_Type& type, std::vector<Expected>& expected_vector);
 void IDENT(const Token& token, std::string& ident, std::vector<Expected>& expected_vector);
