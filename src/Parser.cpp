@@ -167,7 +167,7 @@ struct AST_NODE{
 };
 */
 
-void AST(Parser parser){
+void AST(Parser& parser){
     switch(parser.current().type){
         case TokenType::LET:
             let_dec(parser);
@@ -185,9 +185,12 @@ int main(int argc, char** argv){
     std::ifstream read(file_name);
     std::string temp;
     std::vector<std::string> lines;
+    
     while(std::getline(read, temp)) lines.push_back(temp);
+
     for(std::vector<lexical_token> lex : Stream(lines)){
-        AST(Parser(Tokenize(lex)));
+        Parser parser(Tokenize(lex));
+        AST(parser);
     }
     return 0;
 }
