@@ -1,10 +1,10 @@
 
 # Introduction:
-[insert lange name] is a language based on easy scripting yet fast performance,
+***Tier*** is a language based on easy scripting yet fast performance,
 it is a static compiled language. It focuses on clear error reporting.
 
 # 1.0: Expressions:
-Expressions are the core of [insert lang name], everything depends
+Expressions are the core of ***Tier***, everything depends
 on the definition of expressions.
 
 ## Definition of a 'DEFINITION':
@@ -107,7 +107,7 @@ All type groups and types:
   `'#set infer' TYPE_GROUP 'to' TYPE ';'`
   or 
   `'#enforce infer' TYPE_GROUP 'to' TYPE ';'`
-   L-> Everything after it will use that default bu`#set typegroup Unsigned_Integer = u8, u16, u32, u64;`t NOT before it, it is not affected by scopes.
+  * Everything after it will use that default but NOT before it, it is not affected by scopes.
   Unless defaults are set, then the defaults are as follows:
     - `Integer` → `i32`
     - `Float` → `f64`
@@ -161,7 +161,7 @@ All type groups and types:
   }
   ```
   ommiting `->` is equal to `-> void`.
-  {insert lang name} templates are made to be clear and simple, they go in hand with the type inference system using type groups and value groups, for example:
+  Tier templates are made to be clear and simple, they go in hand with the type inference system using type groups and value groups, for example:
   ```
   fn<T> add(x: T, y: T) -> T {
     return x + y;
@@ -181,8 +181,9 @@ All type groups and types:
   ```
 
   ## WIP
-  #set promotion
-  #set explicit
+  #set promotion \
+  #set explicit \
+  #set explicit \
 
   ## WIP
   generics system
@@ -195,7 +196,7 @@ All type groups and types:
 
 # 5.0: Memory:
   ## SECTION IN WIP.
-  Memory is also tiered.
+  Memory is also ***Tier***ed.
   * `#enforce/set memory_check off`: raw memory control, compiler enforces no memory checks, best when performance is key.
   * `#enforce/set memory_check on`: 
     - The default setting.
