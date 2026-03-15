@@ -6,7 +6,7 @@ bool is_operator(TokenType type);
 
 bool is_type(TokenType type);
 
-void print_expr(const ExprNode& node, const std::string& prefix = "", bool is_right = false);
+void print_expr(const ExprNode& node, int indent = 0);
 
 ExprNode Parse_expression(const std::vector<Token>& expr);
 
@@ -25,6 +25,6 @@ class Parser{
         std::vector<Token>& line(){ return tokens; }
 };
 
-AST_NODE let_dec(Parser parser);
+AST_NODE let_dec(Parser& parser);
 
-void AST(Parser parser);
+void AST(Parser& parser);

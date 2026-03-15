@@ -20,26 +20,26 @@ bool is_type(TokenType type){
     else return false; 
 }
 
-void print_expr(const ExprNode& node, const std::string& prefix, bool is_right){
+void print_expr(const ExprNode& node, int indent){
+    std::string pad(indent * 2, ' ');
     if(std::holds_alternative<LiteralExpr>(node.node)){
-        std::cout << prefix << (is_right ? "└── " : "├── ");
-        std::cout << std::get<LiteralExpr>(node.node).value.org_word << '\n';
+        std::cout << pad << std::get<LiteralExpr>(node.node).value.org_word << '\n';
     } else {
         const BinaryExpr& bin = std::get<BinaryExpr>(node.node);
-        std::cout << prefix << (is_right ? "└── " : "├── ");
-        std::cout << bin.op.org_word << '\n';
-        std::string new_prefix = prefix + (is_right ? "    " : "    ");
-        print_expr(*bin.left, new_prefix, false);
-        print_expr(*bin.right, new_prefix, true);
+        std::cout << pad << bin.op.org_word << '\n';
+        print_expr(*bin.left, indent + 1);
+        print_expr(*bin.right, indent + 1);
     }
 }
 
 ExprNode Parse_expression(const std::vector<Token>& expr){
-    std::unordered_map<std::string, int> operator_precedence; // greater number = greater precedence
-    operator_precedence["+"] = 1;
-    operator_precedence["-"] = 1;
-    operator_precedence["*"] = 2;
-    operator_precedence["/"] = 2;
+    static const std::unordered_map<std::string, int> operator_precedence = {
+        {"+", 1},
+        {"-", 1},
+        {"*", 2},
+        {"/", 2},
+    }; // greater number = greater precedence
+
     std::vector<Token> output_stack;
     std::vector<Token> operator_stack;
     for(const Token& token : expr){
@@ -48,16 +48,24 @@ ExprNode Parse_expression(const std::vector<Token>& expr){
         }
         else if(is_operator(token.type)){
 
-            while(!operator_stack.empty()){
-                if(operator_precedence.at(operator_stack.back().org_word) >= operator_precedence.at(token.org_word)){
-                    output_stack.push_back(operator_stack.back());
-                    operator_stack.pop_back();
-                }
-                else{
-                    break;
-                }
-            }
+        while(!operator_stack.empty() && 
+            operator_stack.back().type != TokenType::LPARA &&
+            operator_precedence.at(operator_stack.back().org_word) >= operator_precedence.at(token.org_word)){
+            output_stack.push_back(operator_stack.back());
+            operator_stack.pop_back();
+        }
             operator_stack.push_back(token);
+        }
+        else if(token.type == TokenType::LPARA){
+            operator_stack.push_back(token);
+        }
+        else if(token.type == TokenType::RPARA){
+
+            while(operator_stack.back().type != TokenType::LPARA){
+                output_stack.push_back(operator_stack.back());
+                operator_stack.pop_back();
+            }
+            operator_stack.pop_back();
         }
     }
     while(!operator_stack.empty()){
@@ -85,10 +93,12 @@ ExprNode Parse_expression(const std::vector<Token>& expr){
     }
 
     ExprNode root = std::move(node_stack.back());
+    std::cout << '\n';
+    print_expr(root);
     return root;
 }
 
-AST_NODE let_dec(Parser parser){
+AST_NODE let_dec(Parser& parser){
     Declaration_Node dec_node;
     if(parser.check(TokenType::IDENTIFIER)) dec_node.identifier = parser.consume().org_word;
     else return AST_NODE{};
@@ -111,7 +121,7 @@ AST_NODE let_dec(Parser parser){
     return AST_NODE{AST_Type::DECLARATION, Node(std::move(dec_node)), false, false, &parser.line()};
 }
 
-AST_NODE set_and_enforce_statements(Parser parser){
+AST_NODE set_and_enforce_statements(Parser& parser){
     AST_Type type;
 
     bool enforce = parser.check(TokenType::ENFORCE) ? true : false;
